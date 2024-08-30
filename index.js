@@ -24,11 +24,6 @@ function mqtt_connect() {
 };
 
 function mqtt_subscribe(err, granted) {
-	if (!err) {
-		setTimeout(() => {
-			client.publish("presence", "Hello mqtt");
-		}, 30)
-	}
 	console.log("Subscribed to " + Topic);
 	if (err) { console.log(err); }
 };
