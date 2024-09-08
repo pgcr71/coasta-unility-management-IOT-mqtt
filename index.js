@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 import pkg from 'sqlite3';
 const { verbose } = pkg;
 var Topic = '#'; //subscribe to all topics
-var Broker_URL = 'localhost';
+var Broker_URL = 'mqtt://test.mosquitto.org';
 
 var options = {
 	clientId: 'MyMQTT',
@@ -38,7 +38,7 @@ function mqtt_reconnect(err) {
 
 function mqtt_error(err) {
 	console.log("Error!");
-	if (err) {console.log(err);}
+	if (err) { console.log(err); }
 };
 
 
@@ -65,9 +65,14 @@ function mqtt_close() {
 
 const sqlite = verbose();
 const db = new sqlite.Database("./coasta.db");
-db.serialize(() => { 
+db.serialize(() => {
 	//Create Connection
-	db.run("CREATE TABLE info (topic Text, message TEXT)");
+	db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", [], (err, res) => {
+		if (!res)
+			db.run("CREATE TABLE info (topic Text, message TEXT)");
+	})
+	
+
 })
 
 function insert_message(topic, message_str, packet) {
