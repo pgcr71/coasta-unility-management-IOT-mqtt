@@ -1,5 +1,7 @@
-
-var mqtt = require('mqtt'); //https://www.npmjs.com/package/mqtt
+//https://www.npmjs.com/package/mqtt
+import mqtt from "mqtt";
+import pkg from 'sqlite3';
+const { verbose } = pkg;
 var Topic = '#'; //subscribe to all topics
 var Broker_URL = 'localhost';
 
@@ -40,13 +42,10 @@ function mqtt_reconnect(err) {
 };
 
 function mqtt_error(err) {
-	//console.log("Error!");
-	//if (err) {console.log(err);}
+	console.log("Error!");
+	if (err) {console.log(err);}
 };
 
-function after_publish() {
-	//do nothing
-};
 
 //receive a message from MQTT broker
 function mqtt_messsageReceived(topic, message, packet) {
@@ -62,40 +61,29 @@ function mqtt_messsageReceived(topic, message, packet) {
 };
 
 function mqtt_close() {
-	//console.log("Close MQTT");
+	console.log("Closed MQTT");
 };
 
 ////////////////////////////////////////////////////
 ///////////////////// MYSQL ////////////////////////
 ////////////////////////////////////////////////////
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database("./coasta.db");
-db.serialize(() => { //https://www.npmjs.com/package/mysql
+
+const sqlite = verbose();
+const db = new sqlite.Database("./coasta.db");
+db.serialize(() => { 
 	//Create Connection
 	db.run("CREATE TABLE info (topic Text, message TEXT)");
 })
 
-// db.close()
-
-//insert a row into the tbl_messages table
 function insert_message(topic, message_str, packet) {
-	db.serialize(() => { //https://www.npmjs.com/package/mysql
-		//Create Connection
+	db.serialize(() => {
 		const stmt = db.prepare("INSERT INTO info VALUES (?, ?)");
 		var params = [topic, message_str];
 		stmt.run(params);
 		stmt.finalize();
 	})
 
-	// db.close();
 };
 
 //split a string into an array of substrings
 
-
-//count number of delimiters in a string
-var delimiter = ",";
-function countInstances(message_str) {
-	var substrings = message_str.split(delimiter);
-	return substrings.length - 1;
-};
