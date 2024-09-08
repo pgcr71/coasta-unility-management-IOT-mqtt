@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aedes": "^0.51.3",
     "body-parser": "^1.20.2",
     "express": "^4.19.2",
     "mqtt": "^5.10.1",

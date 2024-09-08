@@ -1,6 +1,19 @@
 //https://www.npmjs.com/package/mqtt
 import mqtt from "mqtt";
 import pkg from 'sqlite3';
+
+import Aedes from 'aedes'
+import { createServer } from 'net'
+
+const port = 1883
+
+const aedes = new Aedes()
+const server = createServer(aedes.handle)
+
+server.listen(port, function () {
+  console.log('server started and listening on port ', port)
+})
+
 const { verbose } = pkg;
 var Topic = '#'; //subscribe to all topics
 var Broker_URL = 'mqtt://test.mosquitto.org';
@@ -82,6 +95,8 @@ function insert_message(topic, message_str, packet) {
 	})
 
 };
+
+
 
 //split a string into an array of substrings
 
