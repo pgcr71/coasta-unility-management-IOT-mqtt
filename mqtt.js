@@ -2,21 +2,21 @@
 import mqtt from "mqtt";
 import pkg from 'sqlite3';
 
-import Aedes from 'aedes'
-import { createServer } from 'net'
+// import Aedes from 'aedes'
+// import { createServer } from 'net'
 
-const port = 1883
+// const port = 1883
 
-const aedes = new Aedes()
-const server = createServer(aedes.handle)
+// const aedes = new Aedes()
+// const server = createServer(aedes.handle)
 
-server.listen(port, function () {
-  console.log('server started and listening on port ', port)
-})
+// server.listen(port, function () {
+//   console.log('server started and listening on port ', port)
+// })
 
 const { verbose } = pkg;
 var Topic = '#'; //subscribe to all topics
-var Broker_URL = 'mqtt://test.mosquitto.org';
+var Broker_URL = 'mqtt://localhost';
 
 var options = {
 	clientId: 'MyMQTT',

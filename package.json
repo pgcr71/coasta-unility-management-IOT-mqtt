@@ -5,8 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node index.js",
-    "mqtt": "node mqtt.js",
+    "node": "node index.js",
+    "dev": "node mqtt.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
