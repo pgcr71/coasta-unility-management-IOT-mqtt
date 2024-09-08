@@ -1,87 +1,31 @@
-//https://www.npmjs.com/package/mqtt
-import mqtt from "mqtt";
-import pkg from 'sqlite3';
-const { verbose } = pkg;
-var Topic = '#'; //subscribe to all topics
-var Broker_URL = 'localhost';
+import express from 'express';
+import bodyParser from 'body-parser';
 
-var options = {
-	clientId: 'MyMQTT',
-	port: 1883,
-	//username: 'mqtt_user',
-	//password: 'mqtt_password',	
-	keepalive: 60
-};
+import { createInfoTable, insert_message } from './utils.js';
+import { errorHandler } from './errorMiddleware.js';
+const app = express();
+app.use(errorHandler);
+const port = 1883;
+app.use(bodyParser.json());
+//support parsing of application/x-www-form-urlencoded post data
+app.use(bodyParser.urlencoded({ extended: true }));
 
-var client = mqtt.connect(Broker_URL, options);
-client.on('connect', mqtt_connect);
-client.on('reconnect', mqtt_reconnect);
-client.on('error', mqtt_error);
-client.on('message', mqtt_messsageReceived);
-client.on('close', mqtt_close);
-
-function mqtt_connect() {
-	//console.log("Connecting MQTT");
-	client.subscribe(Topic, mqtt_subscribe);
-};
-
-function mqtt_subscribe(err, granted) {
-	console.log("Subscribed to " + Topic);
-	if (err) { console.log(err); }
-};
-
-function mqtt_reconnect(err) {
-	//console.log("Reconnect MQTT");
-	//if (err) {console.log(err);}
-	client = mqtt.connect(Broker_URL, options);
-};
-
-function mqtt_error(err) {
-	console.log("Error!");
-	if (err) { console.log(err); }
-};
-
-
-//receive a message from MQTT broker
-function mqtt_messsageReceived(topic, message, packet) {
-
-	var message_str = message.toString(); //convert byte array to string
-	console.log(message_str, topic)
-	message_str = message_str.replace(/\n$/, ''); //remove new line
-	//payload syntax: clientID,topic,message
-
-	insert_message(topic, message_str, packet);
-	//console.log(message_arr);
-
-};
-
-function mqtt_close() {
-	console.log("Closed MQTT");
-};
-
-////////////////////////////////////////////////////
-///////////////////// MYSQL ////////////////////////
-////////////////////////////////////////////////////
-
-const sqlite = verbose();
-const db = new sqlite.Database("./coasta.db");
-db.serialize(() => {
-	//Create Connection
-	db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
-		if (!res)
-			db.run("CREATE TABLE info (topic Text, message TEXT, created_at TEXT)");
-	})
+app.post('/', (req, res) => {
+    console.log(req.body)
+    const body = req.body;
+    createInfoTable();
+    insert_message('device', body)
+    res.send('OK')
 })
 
-function insert_message(topic, message_str, packet) {
-	db.serialize(() => {
-		const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
-		var params = [topic, message_str, new Date().toISOString()];
-		stmt.run(params);
-		stmt.finalize();
-	})
+app.get('/', (req, res) => {
+    console.log(req.query)
+    const body= req.query;
+    createInfoTable();
+    insert_message('device', body)
+    res.send('OK')
+})
 
-};
-
-//split a string into an array of substrings
-
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
