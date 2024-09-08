@@ -7,3 +7,13 @@
 4) npm run dev
 5) server should be listening for all the messages published and should store info in coasta.db sqlite database file
 6) for production pm2 start index.js
+
+opti0nal
+7) download https://github.com/jessety/pm2-installer/archive/main.zip
+8)  as admin, npm run configure
+9) as admin, npm run configure-policy
+10) as admin, npm run setup
+
+to remove 
+10) npm run remove
+11) npm run deconfigure
