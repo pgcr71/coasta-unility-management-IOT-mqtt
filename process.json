@@ -1,0 +1,12 @@
+{
+    "apps": [
+        {
+            "name": "mqttbroker",
+            "script": "./mqtt.js"
+        },
+        {
+            "name": "datasync",
+            "script": "./cronjob.js"
+        }
+    ]
+}

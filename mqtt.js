@@ -1,18 +1,20 @@
 //https://www.npmjs.com/package/mqtt
 import mqtt from "mqtt";
 import pkg from 'sqlite3';
+import dayjs from "dayjs";
+import fs from 'fs';
 
-// import Aedes from 'aedes'
-// import { createServer } from 'net'
+import Aedes from 'aedes'
+import { createServer } from 'net'
 
-// const port = 1883
+const port = 1883
 
-// const aedes = new Aedes()
-// const server = createServer(aedes.handle)
+const aedes = new Aedes()
+const server = createServer(aedes.handle)
 
-// server.listen(port, function () {
-//   console.log('server started and listening on port ', port)
-// })
+server.listen(port, function () {
+  console.log('server started and listening on port ', port)
+})
 
 const { verbose } = pkg;
 var Topic = '#'; //subscribe to all topics
@@ -77,7 +79,13 @@ function mqtt_close() {
 ////////////////////////////////////////////////////
 
 const sqlite = verbose();
-const db = new sqlite.Database("./coasta.db");
+const date = dayjs().format('DDMMYYYYHH')
+
+if (!fs.existsSync("databases")){
+    fs.mkdirSync("databases");
+}
+let databasePath = `./databases/${date}.db`;
+const db = new sqlite.Database(databasePath);
 db.serialize(() => {
 	//Create Connection
 	db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
