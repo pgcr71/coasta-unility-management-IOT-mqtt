@@ -60,12 +60,39 @@ function mqtt_error(err) {
 //receive a message from MQTT broker
 function mqtt_messsageReceived(topic, message, packet) {
 
-	var message_str = message.toString(); //convert byte array to string
-	console.log(message_str, topic)
-	message_str = message_str.replace(/\n$/, ''); //remove new line
-	//payload syntax: clientID,topic,message
-
-	insert_message(topic, message_str, packet);
+	let x = JSON.parse(message.toString().trim());
+	let y = [];
+	if (x && x["data"] && x["data"]["modbus"]) {
+		for (let obj of x["data"]["modbus"]) {
+			let parameters = []
+			for(let [key,value] of Object.entries(obj)) {
+				console.log(key, value)
+				if(['sid', 'stat', 'rcnt'].includes(key)) {
+					continue
+				}
+				parameters.push({
+					parameter: key,
+					value ,
+					sid: obj['sid'],
+					stat: obj['stat'],
+					rctn: obj['rcnt']
+				})
+			}
+			parameters.forEach(parmeter =>  {
+				y.push({
+					...x["data"],
+					modbus: null,
+					...parmeter,
+				})
+			})
+		}
+	} else {
+		y.push(x)
+	}
+	
+	 //convert byte array to string
+	
+	insert_message(topic, JSON.stringify(y), packet);
 	//console.log(message_arr);
 
 };
@@ -90,7 +117,7 @@ db.serialize(() => {
 	//Create Connection
 	db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
 		if (!res)
-			db.run("CREATE TABLE info (topic Text, message TEXT, created_at TEXT)");
+			db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
 	})
 })
 
@@ -103,6 +130,11 @@ function insert_message(topic, message_str, packet) {
 	})
 
 };
+
+// setTimeout(() =>mqtt_messsageReceived("ganesh", JSON.stringify({ "data":{ "mac":"D8478F926329","uid":1,"dtm":"20240908212506","seq":1350,"msg":"log","modbus": [{ "sid":12,"stat":0,"rcnt":  2,"EBKWh":1.84,"DGKWh":0.11 }] }}
+
+// ), ''), 300)
+
 
 
 
