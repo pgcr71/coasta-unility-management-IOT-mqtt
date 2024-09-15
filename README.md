@@ -17,3 +17,9 @@ opti0nal
 to remove 
 10) npm run remove
 11) npm run deconfigure
+
+12) to sync records, create .env file, insert below user and password
+    BASIC_AUTH_USER=''
+    BASIC_AUTH_PASSWORD='' 
+
+ 13) run node --env-file=.env ./cronjobs.js
