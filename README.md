@@ -22,4 +22,4 @@ to remove
     BASIC_AUTH_USER=''
     BASIC_AUTH_PASSWORD='' 
 
- 13) run node --env-file=.env ./cronjobs.js
+ 13) run node --env-file=.env cronjobs.js
