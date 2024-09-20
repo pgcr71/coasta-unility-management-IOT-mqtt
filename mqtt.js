@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 import pkg from 'sqlite3';
 import dayjs from "dayjs";
 import fs from 'fs';
-
+import path from 'path';
 import Aedes from 'aedes'
 import { createServer } from 'net'
 
@@ -13,7 +13,7 @@ const aedes = new Aedes()
 const server = createServer(aedes.handle)
 
 server.listen(port, function () {
-  console.log('server started and listening on port ', port)
+	console.log('server started and listening on port ', port)
 })
 
 const { verbose } = pkg;
@@ -65,20 +65,20 @@ function mqtt_messsageReceived(topic, message, packet) {
 	if (x && x["data"] && x["data"]["modbus"]) {
 		for (let obj of x["data"]["modbus"]) {
 			let parameters = []
-			for(let [key,value] of Object.entries(obj)) {
+			for (let [key, value] of Object.entries(obj)) {
 				console.log(key, value)
-				if(['sid', 'stat', 'rcnt'].includes(key)) {
+				if (['sid', 'stat', 'rcnt'].includes(key)) {
 					continue
 				}
 				parameters.push({
 					parameter: key,
-					value ,
+					value,
 					sid: obj['sid'],
 					stat: obj['stat'],
 					rctn: obj['rcnt']
 				})
 			}
-			parameters.forEach(parmeter =>  {
+			parameters.forEach(parmeter => {
 				y.push({
 					...x["data"],
 					modbus: null,
@@ -89,9 +89,9 @@ function mqtt_messsageReceived(topic, message, packet) {
 	} else {
 		y.push(x)
 	}
-	
-	 //convert byte array to string
-	
+
+	//convert byte array to string
+
 	insert_message(topic, JSON.stringify(y), packet);
 	//console.log(message_arr);
 
@@ -108,20 +108,32 @@ function mqtt_close() {
 const sqlite = verbose();
 const date = dayjs().format('DDMMYYYYHH')
 
-if (!fs.existsSync("databases")){
-    fs.mkdirSync("databases");
+if (!fs.existsSync("databases")) {
+	fs.mkdirSync("databases");
 }
 let databasePath = `./databases/${date}.db`;
-const db = new sqlite.Database(databasePath);
-db.serialize(() => {
-	//Create Connection
-	db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
-		if (!res)
-			db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
+let db = new sqlite.Database(databasePath);
+createNewTable(db)
+function createNewTable(db) {
+	db.serialize(() => {
+		//Create Connection
+		db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
+			if (!res)
+				db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
+		})
 	})
-})
+}
+
 
 function insert_message(topic, message_str, packet) {
+	const date = dayjs().format('DDMMYYYYHH');
+	let databasePath = `./databases/${date}.db`;
+	const desiredPath = path.resolve(__dirname, databasePath);
+	if (!fs.existsSync(desiredPath)) {
+		db = new sqlite.Database(databasePath);
+		createNewTable(db)
+	}
+
 	db.serialize(() => {
 		const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
 		var params = [topic, message_str, new Date().toISOString()];

@@ -7,6 +7,7 @@
   "scripts": {
     "node": "node index.js",
     "dev": "node mqtt.js",
+    "cronjob": "node --env-file=.env cronjob.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

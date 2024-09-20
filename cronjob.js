@@ -27,15 +27,19 @@ const newestFile = glob.sync('databases/*.db')
 
 }
 function getTopRecordForEachParameter(db) {
-    db.all(`WITH summary AS (select *, dense_rank() OVER(PARTITION BY json_extract(value, '$.parameter'),json_extract(value, '$.mac'),json_extract(value, '$.sid')
-ORDER BY json_extract(value, '$.seq') desc) AS rank from info, json_each(info.message, '$'))
-select value from summary where rank = 1;`, async (err, res) => {
+    db.all(`WITH a AS (select json_extract(value, '$.parameter') as parameter1,json_extract(value, '$.mac') as macadd,json_extract(value, '$.sid') as sid, json_extract(value, '$.seq') as seq, value
+from info, json_each(info.message, '$') order by sid desc),
+b as (select *, ROW_NUMBER  () OVER (PARTITION BY parameter1, macadd, sid) as rank1 from a where parameter1 is not null)
+select value from b where rank1 = 1;`, async (err, res) => {
         if (err) {
             console.log(err)
             console.log('some thing went wrong')
             return
         }
         try {
+            const data = res.map(({ value }) => JSON.parse(value))
+            .filter(({parameter}) => ["EBKWh", "DGKWh"].includes(parameter))
+            console.log(data.length)
             const result = await fetch('https://utilfacts.com/api/v1/sync',
                 {
                     method: 'POST',
@@ -43,9 +47,8 @@ select value from summary where rank = 1;`, async (err, res) => {
                         'Authorization': "basic " + btoa(process.env.BASIC_AUTH_USER + ":" + process.env.BASIC_AUTH_PASSWORD)
                     },
 
-                    body: JSON.stringify(res.map(({ value }) => JSON.parse(value)))
-                })
-            console.log(result)
+                    body: JSON.stringify(data)
+                }).then((res) => res.text())
         } catch (e) {
             console.log(e)
         }
