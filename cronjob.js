@@ -1,6 +1,10 @@
 import cron from "node-cron";
 import dayjs from "dayjs";
 import pkg from 'sqlite3';
+import fs from 'fs'
+import glob from 'glob'
+
+
 
 const { verbose } = pkg;
 const sqlite = verbose();
@@ -9,8 +13,11 @@ const sqlite = verbose();
 crons()
 function crons() {
 
-    let lastHour = dayjs().subtract(1, 'hours').format("DDMMYYYYHH");
-    let databasePath = `./databases/${lastHour}.db`;
+const newestFile = glob.sync('databases/*.db')
+  .map(name => ({name, ctime: fs.statSync(name).ctime}))
+  .sort((a, b) => b.ctime - a.ctime)[0].name
+    let databasePath = `${newestFile}`;
+    console.log(databasePath)
     const db = new sqlite.Database(databasePath);
     db.serialize(() => {
         //Create Connection
@@ -24,6 +31,7 @@ function getTopRecordForEachParameter(db) {
 ORDER BY json_extract(value, '$.seq') desc) AS rank from info, json_each(info.message, '$'))
 select value from summary where rank = 1;`, async (err, res) => {
         if (err) {
+            console.log(err)
             console.log('some thing went wrong')
             return
         }
