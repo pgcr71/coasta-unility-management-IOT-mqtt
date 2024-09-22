@@ -9,8 +9,8 @@ import glob from 'glob'
 const { verbose } = pkg;
 const sqlite = verbose();
 
-// cron.schedule('1 */1 * * *',crons );
-crons()
+cron.schedule('1 0 * * *', crons);
+
 function crons() {
 
 const newestFile = glob.sync('databases/*.db')
