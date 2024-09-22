@@ -29,7 +29,7 @@ const newestFile = glob.sync('databases/*.db')
 function getTopRecordForEachParameter(db) {
     db.all(`WITH a AS (select json_extract(value, '$.parameter') as parameter1,json_extract(value, '$.mac') as macadd,json_extract(value, '$.sid') as sid, json_extract(value, '$.seq') as seq, value
 from info, json_each(info.message, '$') order by sid desc),
-b as (select *, ROW_NUMBER  () OVER (PARTITION BY parameter1, macadd, sid) as rank1 from a where parameter1 is not null)
+b as (select *, ROW_NUMBER() OVER (PARTITION BY parameter1, macadd, sid) as rank1 from a where parameter1 is not null)
 select value from b where rank1 = 1;`, async (err, res) => {
         if (err) {
             console.log(err)
