@@ -13,9 +13,9 @@ cron.schedule('1 0 * * *', crons);
 
 function crons() {
 
-const newestFile = glob.sync('databases/*.db')
-  .map(name => ({name, ctime: fs.statSync(name).ctime}))
-  .sort((a, b) => b.ctime - a.ctime)[0].name
+    const newestFile = glob.sync('databases/*.db')
+        .map(name => ({ name, ctime: fs.statSync(name).ctime }))
+        .sort((a, b) => b.ctime - a.ctime)[0].name
     let databasePath = `${newestFile}`;
     console.log(databasePath)
     const db = new sqlite.Database(databasePath);
