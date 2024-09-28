@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import Aedes from 'aedes'
 import { createServer } from 'net'
+import {fileURLToPath} from 'url';
 
 const port = 1883
 
@@ -59,14 +60,12 @@ function mqtt_error(err) {
 
 //receive a message from MQTT broker
 function mqtt_messsageReceived(topic, message, packet) {
-
 	let x = JSON.parse(message.toString().trim());
 	let y = [];
 	if (x && x["data"] && x["data"]["modbus"]) {
 		for (let obj of x["data"]["modbus"]) {
 			let parameters = []
 			for (let [key, value] of Object.entries(obj)) {
-				console.log(key, value)
 				if (['sid', 'stat', 'rcnt'].includes(key)) {
 					continue
 				}
@@ -128,6 +127,8 @@ function createNewTable(db) {
 function insert_message(topic, message_str, packet) {
 	const date = dayjs().format('DDMMYYYYHH');
 	let databasePath = `./databases/${date}.db`;
+	const __filename = fileURLToPath(import.meta.url);
+	const __dirname = path.dirname(__filename);
 	const desiredPath = path.resolve(__dirname, databasePath);
 	if (!fs.existsSync(desiredPath)) {
 		db = new sqlite.Database(databasePath);

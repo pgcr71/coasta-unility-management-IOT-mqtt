@@ -6,7 +6,8 @@
         },
         {
             "name": "datasync",
-            "script": "./cronjob.js"
+            "script": "./cronjob.js",
+			"node_args" : "--env-file=.env"
         }
     ]
 } 
