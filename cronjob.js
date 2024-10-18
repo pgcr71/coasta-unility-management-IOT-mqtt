@@ -9,21 +9,23 @@ import glob from 'glob'
 const { verbose } = pkg;
 const sqlite = verbose();
 
-cron.schedule('1 0 * * *', crons);
+cron.schedule('15 * * * *', crons);
 crons()
 function crons() {
-
+    try {
     const newestFile = glob.sync('databases/*.db')
         .map(name => ({ name, ctime: fs.statSync(name).ctime }))
-        .sort((a, b) => b.ctime - a.ctime)[0].name
+        .sort((a, b) => b.ctime - a.ctime)[1].name
     let databasePath = `${newestFile}`;
     console.log(databasePath)
-    const db = new sqlite.Database(databasePath);
-    db.serialize(() => {
-        //Create Connection
-        getTopRecordForEachParameter(db)
-    })
-    //sync databases
+        const db = new sqlite.Database(databasePath);
+        db.serialize(() => {
+            //Create Connection
+            getTopRecordForEachParameter(db)
+        })
+    } catch (e) {
+        console.log('coulnd connect to sqlite', e)
+    }
 
 }
 function getTopRecordForEachParameter(db) {
@@ -32,8 +34,8 @@ from info, json_each(info.message, '$') order by sid desc),
 b as (select *, ROW_NUMBER() OVER (PARTITION BY parameter1, macadd, sid) as rank1 from a where parameter1 is not null)
 select value from b where rank1 = 1;`, async (err, res) => {
         if (err) {
-            console.log(err)
-            console.log('some thing went wrong')
+            // console.log(err)
+            console.log('Some of the devices data is not synced')
             return
         }
         try {
