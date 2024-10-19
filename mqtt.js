@@ -184,6 +184,10 @@ worker.on("error", (msg) => {
 	console.log(msg);
 });
 
+
+process.on('uncaughtException', (err) => {
+	console.log('whoops! there was an error', err);
+ });
 // setTimeout(() =>mqtt_messsageReceived("ganesh", JSON.stringify({ "data":{ "mac":"D8478F926329","uid":1,"dtm":"20240908212506","seq":1350,"msg":"log","modbus": [{ "sid":12,"stat":0,"rcnt":  2,"EBKWh":1.84,"DGKWh":0.11 }] }}
 
 // ), ''), 300)
