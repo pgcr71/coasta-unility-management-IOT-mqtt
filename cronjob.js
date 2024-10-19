@@ -15,18 +15,25 @@ function crons() {
     try {
     
 
-    const newestFile = glob.sync(`databases/*.db`)
-        .map(name => ({ name, ctime: fs.statSync(name).ctime }))
-        .sort((a, b) => b.ctime - a.ctime)[1].name;
+        const newestFile = glob.sync(`databases/*.db`)
+            .map(name => ({ name, ctime: fs.statSync(name).ctime }))
+            .sort((a, b) => b.ctime - a.ctime)[1].name;
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         const databasePath = path.resolve(__dirname, newestFile);
-        console.log(newestFile,databasePath)
-        const db = new sqlite.Database(databasePath);
+        const envfile = path.resolve(__dirname, 'test.txt');
+        console.log(envfile)
+        console.log(newestFile, databasePath)
+        const data = fs.readFileSync(envfile, { encoding: 'utf8' });
+
+        console.log(data);
+        const db = new sqlite.Database(databasePath)
         db.serialize(() => {
             //Create Connection
             getTopRecordForEachParameter(db)
         })
+
+
     } catch (e) {
         console.log('coulnd connect to sqlite', e)
     }
