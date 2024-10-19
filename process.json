@@ -3,7 +3,8 @@
         {
             "name": "mqttbroker",
             "script": "mqtt.js",
-            "node_args": "--env-file=.env"
+            "node_args": "--env-file=.env",
+            "cwd": "./"
         }
     ]
 }
