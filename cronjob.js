@@ -14,13 +14,13 @@ crons()
 function crons() {
     try {
     
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-    const newestFile = glob.sync(`${__dirname}/databases/*.db`)
+
+    const newestFile = glob.sync(`databases/*.db`)
         .map(name => ({ name, ctime: fs.statSync(name).ctime }))
         .sort((a, b) => b.ctime - a.ctime)[1].name;
-       
-    let databasePath = `${newestFile}`;
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const databasePath = path.resolve(__dirname, newestFile);
     console.log(newestFile)
         const db = new sqlite.Database(databasePath);
         db.serialize(() => {
