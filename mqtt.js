@@ -106,12 +106,20 @@ function mqtt_close() {
 
 const sqlite = verbose();
 const date = dayjs().format('DDMMYYYYHH')
-
+let db;
 if (!fs.existsSync("databases")) {
 	fs.mkdirSync("databases");
 }
 
+function closeDataBaseConnection() {
+	try {
+		db && db.close()
+	} catch(e) {
+		console.log('counldn close existing connection')
+	}
+}
 function init() {
+	closeDataBaseConnection()
 	try {
 		let databasePath = `./databases/${date}.db`;
 
@@ -142,6 +150,7 @@ function insert_message(topic, message_str, packet) {
 	const __dirname = path.dirname(__filename);
 	const desiredPath = path.resolve(__dirname, databasePath);
 	if (!fs.existsSync(desiredPath)) {
+		closeDataBaseConnection()
 		db = new sqlite.Database(databasePath);
 		createNewTable(db)
 	}
