@@ -3,17 +3,19 @@ import pkg from 'sqlite3';
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path';
-import {fileURLToPath} from 'url';
-
+import { fileURLToPath } from 'url';
+import { parentPort } from "worker_threads";
 
 const { verbose } = pkg;
 const sqlite = verbose();
 
 cron.schedule('15 * * * *', crons);
 crons()
+
 function crons() {
+    parentPort.postMessage('cron job started every 15 * * * *')
     try {
-    
+
 
         const newestFile = glob.sync(`databases/*.db`)
             .map(name => ({ name, ctime: fs.statSync(name).ctime }))
@@ -39,6 +41,8 @@ function crons() {
     }
 
 }
+
+
 function getTopRecordForEachParameter(db) {
     db.all(`WITH a AS (select json_extract(value, '$.parameter') as parameter1,json_extract(value, '$.mac') as macadd,json_extract(value, '$.sid') as sid, json_extract(value, '$.seq') as seq, value
 from info, json_each(info.message, '$') order by sid desc),
@@ -46,12 +50,12 @@ b as (select *, ROW_NUMBER() OVER (PARTITION BY parameter1, macadd, sid) as rank
 select value from b where rank1 = 1;`, async (err, res) => {
         if (err) {
             console.log(err)
-            
+
             return
         }
         try {
             const data = res.map(({ value }) => JSON.parse(value))
-            .filter(({parameter}) => ["EBKWh", "DGKWh"].includes(parameter))
+                .filter(({ parameter }) => ["EBKWh", "DGKWh"].includes(parameter))
             console.log(data.length)
             const result = await fetch('https://utilfacts.com/api/v1/sync',
                 {
@@ -61,7 +65,7 @@ select value from b where rank1 = 1;`, async (err, res) => {
                     },
 
                     body: JSON.stringify(data)
-                }).then((res) => res.text())
+                }).then((res) => { parentPort.postMessage('synced'); res.text() })
         } catch (e) {
             console.log('Some of the devices data is not synced')
             console.log(e)

@@ -2,12 +2,8 @@
     "apps": [
         {
             "name": "mqttbroker",
-            "script": "./mqtt.js"
-        },
-        {
-            "name": "datasync",
-            "script": "./cronjob.js",
-			"node_args" : "--env-file=.env"
+            "script": "./mqtt.js",
+            "node_args": "--env-file=.env"
         }
     ]
-} 
+}

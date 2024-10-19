@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import Aedes from 'aedes'
 import { createServer } from 'net'
+import { Worker } from "worker_threads";
 import { fileURLToPath } from 'url';
 
 const port = 1883
@@ -169,6 +170,15 @@ function insert_message(topic, message_str, packet) {
 
 
 };
+
+
+const worker = new Worker('./cronjob.js');
+worker.on('message', (result) => {
+	console.log(result)
+})
+worker.on("error", (msg) => {
+	console.log(msg);
+});
 
 // setTimeout(() =>mqtt_messsageReceived("ganesh", JSON.stringify({ "data":{ "mac":"D8478F926329","uid":1,"dtm":"20240908212506","seq":1350,"msg":"log","modbus": [{ "sid":12,"stat":0,"rcnt":  2,"EBKWh":1.84,"DGKWh":0.11 }] }}
 
