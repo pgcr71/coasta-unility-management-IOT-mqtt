@@ -105,7 +105,7 @@ function mqtt_close() {
 ////////////////////////////////////////////////////
 
 const sqlite = verbose();
-const date = dayjs().format('DDMMYYYYHH')
+
 let db;
 if (!fs.existsSync("databases")) {
 	fs.mkdirSync("databases");
@@ -118,22 +118,25 @@ function closeDataBaseConnection() {
 		console.log('counldn close existing connection')
 	}
 }
+
+function createNewTable(db) {
+	db.serialize(() => {
+		//Create Connection
+		db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
+			if (!res)
+				db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
+		})
+	})
+}
+
 function init() {
 	closeDataBaseConnection()
 	try {
+		const date = dayjs().format('DDMMYYYYHH')
 		let databasePath = `./databases/${date}.db`;
 
 		let db = new sqlite.Database(databasePath);
 		createNewTable(db)
-		function createNewTable(db) {
-			db.serialize(() => {
-				//Create Connection
-				db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
-					if (!res)
-						db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
-				})
-			})
-		}
 
 	} catch (e) {
 		console.log('error in mqtt line 130')
@@ -142,8 +145,8 @@ function init() {
 }
 
 
-
 function insert_message(topic, message_str, packet) {
+	console.log(db)
 	const date = dayjs().format('DDMMYYYYHH');
 	let databasePath = `./databases/${date}.db`;
 	const __filename = fileURLToPath(import.meta.url);
