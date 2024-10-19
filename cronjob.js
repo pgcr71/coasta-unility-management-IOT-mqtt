@@ -18,10 +18,10 @@ function crons() {
         const __dirname = path.dirname(__filename);
     const newestFile = glob.sync(`${__dirname}/databases/*.db`)
         .map(name => ({ name, ctime: fs.statSync(name).ctime }))
-        .sort((a, b) => b.ctime - a.ctime)[1];
-        console.log(JSON.stringify(newestFile))
+        .sort((a, b) => b.ctime - a.ctime)[1].name;
+       
     let databasePath = `${newestFile}`;
-
+    console.log(newestFile)
         const db = new sqlite.Database(databasePath);
         db.serialize(() => {
             //Create Connection
