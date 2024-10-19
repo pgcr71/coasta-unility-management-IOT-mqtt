@@ -11,7 +11,7 @@ const sqlite = verbose();
 
 cron.schedule('15 * * * *', crons);
 crons()
-
+console.log(process.env.BASIC_AUTH_USER)
 function crons() {
     parentPort.postMessage('cron job started every 15 * * * *')
     try {

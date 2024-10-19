@@ -5,7 +5,7 @@
 2) npm install
 3) npm install pm2 -g
 5) server should be listening for all the messages published and should store info in coasta.db sqlite database file
-6) pm2 start process.json
+6) pm2 start process.json or pm2 start npm -- start
 7) download https://github.com/jessety/pm2-installer/archive/main.zip
 8) as admin, npm run configure
 9) as admin, npm run configure-policy

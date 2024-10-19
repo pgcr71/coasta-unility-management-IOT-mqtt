@@ -2,7 +2,7 @@
     "apps": [
         {
             "name": "mqttbroker",
-            "script": "./mqtt.js",
+            "script": "mqtt.js",
             "node_args": "--env-file=.env"
         }
     ]
