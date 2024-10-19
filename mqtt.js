@@ -28,7 +28,7 @@ var options = {
 	//password: 'mqtt_password',	
 	keepalive: 60
 };
-
+init()
 var client = mqtt.connect(Broker_URL, options);
 client.on('connect', mqtt_connect);
 client.on('reconnect', mqtt_reconnect);
@@ -163,7 +163,7 @@ function insert_message(topic, message_str, packet) {
 	})
 
 };
-init()
+
 // setTimeout(() =>mqtt_messsageReceived("ganesh", JSON.stringify({ "data":{ "mac":"D8478F926329","uid":1,"dtm":"20240908212506","seq":1350,"msg":"log","modbus": [{ "sid":12,"stat":0,"rcnt":  2,"EBKWh":1.84,"DGKWh":0.11 }] }}
 
 // ), ''), 300)
