@@ -38,8 +38,8 @@ from info, json_each(info.message, '$') order by sid desc),
 b as (select *, ROW_NUMBER() OVER (PARTITION BY parameter1, macadd, sid) as rank1 from a where parameter1 is not null)
 select value from b where rank1 = 1;`, async (err, res) => {
         if (err) {
-            // console.log(err)
-            console.log('Some of the devices data is not synced')
+            console.log(err)
+            
             return
         }
         try {
@@ -56,6 +56,7 @@ select value from b where rank1 = 1;`, async (err, res) => {
                     body: JSON.stringify(data)
                 }).then((res) => res.text())
         } catch (e) {
+            console.log('Some of the devices data is not synced')
             console.log(e)
         }
 
