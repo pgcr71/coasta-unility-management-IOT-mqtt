@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 
 const port = 1883
 
+let db;
 const aedes = new Aedes()
 const server = createServer(aedes.handle)
 
@@ -106,7 +107,6 @@ function mqtt_close() {
 
 const sqlite = verbose();
 
-let db;
 if (!fs.existsSync("databases")) {
 	fs.mkdirSync("databases");
 }
