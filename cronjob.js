@@ -1,9 +1,9 @@
 import cron from "node-cron";
-import dayjs from "dayjs";
 import pkg from 'sqlite3';
 import fs from 'fs'
 import glob from 'glob'
-
+import path from 'path';
+import {fileURLToPath} from 'url';
 
 
 const { verbose } = pkg;
@@ -13,11 +13,15 @@ cron.schedule('15 * * * *', crons);
 crons()
 function crons() {
     try {
-    const newestFile = glob.sync('databases/*.db')
+    
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+    const newestFile = glob.sync(`${__dirname}/databases/*.db`)
         .map(name => ({ name, ctime: fs.statSync(name).ctime }))
-        .sort((a, b) => b.ctime - a.ctime)[1].name
+        .sort((a, b) => b.ctime - a.ctime)[1];
+        console.log(JSON.stringify(newestFile))
     let databasePath = `${newestFile}`;
-    console.log(databasePath)
+
         const db = new sqlite.Database(databasePath);
         db.serialize(() => {
             //Create Connection
