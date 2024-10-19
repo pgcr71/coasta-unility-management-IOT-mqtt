@@ -49,8 +49,6 @@ function mqtt_subscribe(err, granted) {
 };
 
 function mqtt_reconnect(err) {
-	//console.log("Reconnect MQTT");
-	//if (err) {console.log(err);}
 	client = mqtt.connect(Broker_URL, options);
 };
 
@@ -102,9 +100,7 @@ function mqtt_close() {
 	console.log("Closed MQTT");
 };
 
-////////////////////////////////////////////////////
-///////////////////// MYSQL ////////////////////////
-////////////////////////////////////////////////////
+
 
 const sqlite = verbose();
 
@@ -114,17 +110,17 @@ if (!fs.existsSync("databases")) {
 
 function closeDataBaseConnection() {
 	try {
-		db && db.close()
+		global.db && global.db.close()
 	} catch (e) {
 		console.log(e)
-		console.log('counldn close existing connection')
+		console.log('couldnt close existing connection')
 	}
 }
 
 function createNewTable(db) {
-	db.serialize(() => {
+	global.db.serialize(() => {
 		//Create Connection
-		db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
+		global.db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
 			if (!res)
 				db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
 		})
@@ -137,7 +133,7 @@ function init() {
 		const date = dayjs().format('DDMMYYYYHH')
 		let databasePath = `./databases/${date}.db`;
 
-		let db = new sqlite.Database(databasePath);
+		db = new sqlite.Database(databasePath);
 		createNewTable(db)
 
 	} catch (e) {
@@ -145,7 +141,6 @@ function init() {
 
 	}
 }
-
 
 function insert_message(topic, message_str, packet) {
 	try {
@@ -168,13 +163,8 @@ function insert_message(topic, message_str, packet) {
 	} catch(e) {
 		console.log('error at 169 insert_mesage', e)
 	}
-	
-
-	
-
 
 };
-
 
 const worker = new Worker('./cronjob.js');
 worker.on('message', (result) => {
