@@ -21,7 +21,7 @@ function crons() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         const databasePath = path.resolve(__dirname, newestFile);
-    console.log(newestFile)
+        console.log(newestFile,databasePath)
         const db = new sqlite.Database(databasePath);
         db.serialize(() => {
             //Create Connection
