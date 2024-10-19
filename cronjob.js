@@ -16,13 +16,14 @@ function crons() {
     parentPort.postMessage('cron job started every 15 * * * *')
     try {
         const __filename = fileURLToPath(import.meta.url);
+        console.log(__filename, 'filename')
         const __dirname = path.dirname(__filename);
         const databasePath = path.resolve(__dirname);
         const newestFile = glob.sync(`${databasePath}/databases/*.db`)
             .map(name => ({ name, ctime: fs.statSync(name).ctime }))
             .sort((a, b) => b.ctime - a.ctime)[1].name;
         const envfile = path.resolve(__dirname, 'test.txt');
-        console.log(newestFile)
+        console.log(newestFile, 'newestfile')
         const data = fs.readFileSync(envfile, { encoding: 'utf8' });
 
         console.log(data);
