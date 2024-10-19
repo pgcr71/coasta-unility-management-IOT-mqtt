@@ -15,24 +15,21 @@ console.log(process.env.BASIC_AUTH_USER)
 function crons() {
     parentPort.postMessage('cron job started every 15 * * * *')
     try {
-
-
-        const newestFile = glob.sync(`databases/*.db`)
-            .map(name => ({ name, ctime: fs.statSync(name).ctime }))
-            .sort((a, b) => b.ctime - a.ctime)[1].name;
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        const databasePath = path.resolve(__dirname, newestFile);
+        const databasePath = path.resolve(__dirname);
+        const newestFile = glob.sync(`${databasePath}/databases/*.db`)
+            .map(name => ({ name, ctime: fs.statSync(name).ctime }))
+            .sort((a, b) => b.ctime - a.ctime)[1].name;
         const envfile = path.resolve(__dirname, 'test.txt');
-        console.log(envfile)
-        console.log(newestFile, databasePath)
+        console.log(newestFile)
         const data = fs.readFileSync(envfile, { encoding: 'utf8' });
 
         console.log(data);
-        const db = new sqlite.Database(databasePath)
+        const db = new sqlite.Database(path.resolve(newestFile))
         db.serialize(() => {
             //Create Connection
-            getTopRecordForEachParameter(db, databasePath)
+            getTopRecordForEachParameter(db, newestFile)
         })
 
 
