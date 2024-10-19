@@ -146,24 +146,27 @@ function init() {
 
 
 function insert_message(topic, message_str, packet) {
-	console.log(db)
+	
 	const date = dayjs().format('DDMMYYYYHH');
 	let databasePath = `./databases/${date}.db`;
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
 	const desiredPath = path.resolve(__dirname, databasePath);
-	if (!fs.existsSync(desiredPath)) {
+	if (!fs.existsSync(desiredPath) || !db) {
 		closeDataBaseConnection()
 		db = new sqlite.Database(databasePath);
 		createNewTable(db)
 	}
 
-	db.serialize(() => {
-		const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
-		var params = [topic, message_str, new Date().toISOString()];
-		stmt.run(params);
-		stmt.finalize();
-	})
+	try {
+		db.serialize(() => {
+			const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
+			var params = [topic, message_str, new Date().toISOString()];
+			stmt.run(params);
+			stmt.finalize();
+		})
+	} catch(e)
+
 
 };
 
