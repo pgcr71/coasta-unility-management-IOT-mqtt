@@ -32,7 +32,7 @@ function crons() {
         const db = new sqlite.Database(databasePath)
         db.serialize(() => {
             //Create Connection
-            getTopRecordForEachParameter(db)
+            getTopRecordForEachParameter(db, databasePath)
         })
 
 
@@ -43,7 +43,7 @@ function crons() {
 }
 
 
-function getTopRecordForEachParameter(db) {
+function getTopRecordForEachParameter(db, databasePath) {
     db.all(`WITH a AS (select json_extract(value, '$.parameter') as parameter1,json_extract(value, '$.mac') as macadd,json_extract(value, '$.sid') as sid, json_extract(value, '$.seq') as seq, value
 from info, json_each(info.message, '$') order by sid desc),
 b as (select *, ROW_NUMBER() OVER (PARTITION BY parameter1, macadd, sid) as rank1 from a where parameter1 is not null)
@@ -65,7 +65,7 @@ select value from b where rank1 = 1;`, async (err, res) => {
                     },
 
                     body: JSON.stringify(data)
-                }).then((res) => { parentPort.postMessage('synced'); res.text() })
+                }).then((res) => { parentPort.postMessage('synced', databasePath); res.text() })
         } catch (e) {
             console.log('Some of the devices data is not synced')
             console.log(e)
