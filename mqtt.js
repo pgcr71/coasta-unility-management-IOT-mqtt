@@ -115,6 +115,7 @@ function closeDataBaseConnection() {
 	try {
 		db && db.close()
 	} catch (e) {
+		console.log(e)
 		console.log('counldn close existing connection')
 	}
 }
