@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import Aedes from 'aedes'
 import { createServer } from 'net'
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
 
 const port = 1883
 
@@ -114,7 +114,7 @@ if (!fs.existsSync("databases")) {
 function closeDataBaseConnection() {
 	try {
 		db && db.close()
-	} catch(e) {
+	} catch (e) {
 		console.log('counldn close existing connection')
 	}
 }
@@ -146,7 +146,7 @@ function init() {
 
 
 function insert_message(topic, message_str, packet) {
-	
+
 	const date = dayjs().format('DDMMYYYYHH');
 	let databasePath = `./databases/${date}.db`;
 	const __filename = fileURLToPath(import.meta.url);
@@ -158,14 +158,13 @@ function insert_message(topic, message_str, packet) {
 		createNewTable(db)
 	}
 
-	try {
-		db.serialize(() => {
-			const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
-			var params = [topic, message_str, new Date().toISOString()];
-			stmt.run(params);
-			stmt.finalize();
-		})
-	} catch(e)
+
+	db.serialize(() => {
+		const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
+		var params = [topic, message_str, new Date().toISOString()];
+		stmt.run(params);
+		stmt.finalize();
+	})
 
 
 };
