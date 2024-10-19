@@ -65,7 +65,7 @@ select value from b where rank1 = 1;`, async (err, res) => {
                     },
 
                     body: JSON.stringify(data)
-                }).then((res) => { parentPort.postMessage('synced', databasePath); return res.text() })
+                }).then((res) => {  return res.text() })
         } catch (e) {
             console.log('Some of the devices data is not synced')
             console.log(e)
