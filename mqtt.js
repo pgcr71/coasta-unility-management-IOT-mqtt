@@ -110,7 +110,7 @@ if (!fs.existsSync("databases")) {
 
 function closeDataBaseConnection() {
 	try {
-		global.db && global.db.close()
+		db && db.close()
 	} catch (e) {
 		console.log(e)
 		console.log('couldnt close existing connection')
@@ -118,9 +118,9 @@ function closeDataBaseConnection() {
 }
 
 function createNewTable(db) {
-	global.db.serialize(() => {
+	db.serialize(() => {
 		//Create Connection
-		global.db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
+		db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
 			if (!res)
 				db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
 		})
