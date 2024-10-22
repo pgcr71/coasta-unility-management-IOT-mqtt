@@ -1,6 +1,6 @@
 # coasta-unility-management-IOT-mqtt
 
-1) install nodejs from https://nodejs.org/en
+1) install nodejs from https://nodejs.org/en, while installing click the checkbox to install additional required packages
 2) create .env file, insert below user and password
     BASIC_AUTH_USER=''
     BASIC_AUTH_PASSWORD='' 
