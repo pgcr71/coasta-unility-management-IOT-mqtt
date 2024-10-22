@@ -16,17 +16,11 @@ function crons() {
     parentPort.postMessage('cron job started every 15 * * * *')
     try {
         const __filename = fileURLToPath(import.meta.url);
-        console.log(__filename, 'filename')
         const __dirname = path.dirname(__filename);
         const databasePath = path.resolve(__dirname);
         const newestFile = glob.sync(`${databasePath}/databases/*.db`)
             .map(name => ({ name, ctime: fs.statSync(name).ctime }))
             .sort((a, b) => b.ctime - a.ctime)[1].name;
-        const envfile = path.resolve(__dirname, 'test.txt');
-        console.log(newestFile, 'newestfile')
-        const data = fs.readFileSync(envfile, { encoding: 'utf8' });
-
-        console.log(data);
         const db = new sqlite.Database(path.resolve(newestFile))
         db.serialize(() => {
             //Create Connection
@@ -54,7 +48,7 @@ select value from b where rank1 = 1;`, async (err, res) => {
         try {
             const data = res.map(({ value }) => JSON.parse(value))
                 .filter(({ parameter }) => ["EBKWh", "DGKWh", "CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7", "CH8"].includes(parameter))
-            console.log(data.length)
+          
             const result = await fetch('https://utilfacts.com/api/v1/sync',
                 {
                     method: 'POST',
@@ -63,7 +57,7 @@ select value from b where rank1 = 1;`, async (err, res) => {
                     },
 
                     body: JSON.stringify(data)
-                }).then((res) => {  return res.text() })
+                }).then((res) => {   console.log(data.length, ' Record has been inserted');  return res.text() })
         } catch (e) {
             console.log('Some of the devices data is not synced')
             console.log(e)
