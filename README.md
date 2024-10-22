@@ -1,9 +1,10 @@
 # coasta-unility-management-IOT-mqtt
 
-1) install nodejs from https://nodejs.org/en, while installing click the checkbox to install additional required packages
+1) install nodejs from https://nodejs.org/en, while installing click the checkbox to install additional required packages, then go to project folder
 2) create .env file, insert below user and password
     BASIC_AUTH_USER=''
     BASIC_AUTH_PASSWORD='' 
+3) run CMD as admin, go to project folder then run below three queries one by one 
 3) npm install
 4) npm link node-windows
 5) npm run prod
