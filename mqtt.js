@@ -118,12 +118,10 @@ function closeDataBaseConnection() {
 }
 
 function createNewTable(db) {
-	db.serialize(() => {
-		//Create Connection
-		db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
-			if (!res)
-				db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
-		})
+	//Create Connection
+	db.get("SELECT * FROM sqlite_master WHERE type='table' AND name='info'", (err, res) => {
+		if (!res)
+			db.run("CREATE TABLE info (topic Text, message JSON, created_at TEXT)");
 	})
 }
 
@@ -154,12 +152,12 @@ function insert_message(topic, message_str, packet) {
 			db = new sqlite.Database(databasePath);
 			createNewTable(db)
 		}
-		db.serialize(() => {
-			const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
-			var params = [topic, message_str, new Date().toISOString()];
-			stmt.run(params);
-			stmt.finalize();
-		})
+
+		const stmt = db.prepare("INSERT INTO info VALUES (?, ?, ?)");
+		var params = [topic, message_str, new Date().toISOString()];
+		stmt.run(params);
+		stmt.finalize();
+
 	} catch(e) {
 		console.log('error at 169 insert_mesage', e)
 	}

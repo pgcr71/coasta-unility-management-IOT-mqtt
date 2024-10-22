@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --env-file=.env mqtt.js",
-    "dev": "node mqtt.js",
+    "prod": "node service.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -19,6 +19,7 @@
     "express": "^4.19.2",
     "mqtt": "^5.10.1",
     "node-cron": "^3.0.3",
+    "node-windows": "^1.0.0-beta.8",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
