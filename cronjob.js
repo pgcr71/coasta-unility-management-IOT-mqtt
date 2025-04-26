@@ -4,7 +4,7 @@ import fs from 'fs'
 import glob from 'glob'
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { parentPort } from "worker_threads";
+// import { parentPort } from "worker_threads";
 
 const { verbose } = pkg;
 const sqlite = verbose();
@@ -13,15 +13,20 @@ cron.schedule('15 * * * *', crons);
 crons()
 console.log(process.env.BASIC_AUTH_USER)
 function crons() {
-    parentPort.postMessage('cron job started every 15 * * * *')
+    // parentPort.postMessage('cron job started every 15 * * * *')
     try {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         const databasePath = path.resolve(__dirname);
-        const newestFile = glob.sync(`${databasePath}/databases/*.db`)
+        const fileNames = glob.sync(`${databasePath}/databases/*.db`)
             .map(name => ({ name, ctime: fs.statSync(name).ctime }))
-            .sort((a, b) => b.ctime - a.ctime)[1].name;
-        const db = new sqlite.Database(path.resolve(newestFile))
+            .sort((a, b) => b.ctime - a.ctime)
+        if (!fileNames.length) {
+            console.log('No files in database folder')
+            return
+        }
+        const newestFile =fileNames.length > 1 ? fileNames[1].name : fileNames[0].name
+        const db = new sqlite.Database(path.resolve(newestFile));
         db.serialize(() => {
             //Create Connection
             getTopRecordForEachParameter(db, newestFile)
