@@ -52,9 +52,9 @@ select value from b where rank1 = 1;`, async (err, res) => {
         }
         try {
             const data = res.map(({ value }) => JSON.parse(value))
-                .filter(({ parameter }) => ["EBKWh", "DGKWh","CH0", "CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7", "CH8", "CH00", "CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08"].includes(parameter))
-          
-            const result = await fetch('https://utilfacts.com/api/v1/sync',
+                .filter(({ parameter }) => ["EBKWh", "DGKWh", "CH0", "CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7", "CH8", "CH00", "CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08"].includes(parameter))
+
+            fetch('http://localhost:3000/api/v1/sync',
                 {
                     method: 'POST',
                     headers: {
@@ -62,7 +62,12 @@ select value from b where rank1 = 1;`, async (err, res) => {
                     },
 
                     body: JSON.stringify(data)
-                }).then((res) => {   console.log(data.length, ' Record has been inserted');  return res.text() })
+                })
+                .then(res => res.json())
+                .then(({ inserted = [], notInserted =  []}) => {
+                    console.log(inserted.length, ' Record has been inserted');
+                    console.log('not inserted\n', notInserted);
+                })
         } catch (e) {
             console.log('Some of the devices data is not synced')
             console.log(e)
