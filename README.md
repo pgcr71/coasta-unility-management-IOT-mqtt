@@ -4,10 +4,11 @@
 2) create .env file, insert below user and password
     BASIC_AUTH_USER=''
     BASIC_AUTH_PASSWORD='' 
-3) run CMD as admin, go to project folder then run below three queries one by one 
-3) npm install && npm install -g node-windows
-4) npm link node-windows
-5) npm run prod
-6) server should be listening for all the messages published and should store hourly info in databases folder
+3) run CMD as admin, go to project folder then run below three queries one by one
+4) pip install setuptools
+5) npm install && npm install -g node-windows
+6) npm link node-windows
+7) npm run prod
+8) server should be listening for all the messages published and should store hourly info in databases folder
 
 
