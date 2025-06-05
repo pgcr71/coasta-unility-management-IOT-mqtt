@@ -52,7 +52,7 @@ select value from b where rank1 = 1;`, async (err, res) => {
         }
         try {
             const data = res.map(({ value }) => JSON.parse(value))
-                .filter(({ parameter }) => ["EBKWh", "DGKWh", "CH0", "CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7", "CH8", "CH00", "CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08"].includes(parameter))
+                .filter(({ parameter }) => ["DI01","DI02","DI03","DI04","DI05","DL01","DL02",,"DL03","DL04","EBKWh", "DGKWh", "CH0", "CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7", "CH8", "CH00", "CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08"].includes(parameter))
 
             fetch('http://localhost:3000/api/v1/sync',
                 {
